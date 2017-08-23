@@ -14,6 +14,7 @@
   <objects name="objects">
     <object>objects\obj_player</object>
     <object>objects\obj_block</object>
+    <object>objects\obj_Leeeeeeeeee</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
