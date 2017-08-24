@@ -9,6 +9,8 @@
     <sprite>sprites\spr_block</sprite>
     <sprite>sprites\spr_player_walk</sprite>
     <sprite>sprites\spr_player_stand</sprite>
+    <sprite>sprites\spr_attack</sprite>
+    <sprite>sprites\spr_hitbox</sprite>
     <sprite>sprites\spr_solid_player</sprite>
     <sprite>sprites\spr_player_jump</sprite>
   </sprites>
@@ -17,6 +19,7 @@
   <objects name="objects">
     <object>objects\obj_player</object>
     <object>objects\obj_block</object>
+    <object>objects\obj_hitbox</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
