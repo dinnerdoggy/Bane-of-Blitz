@@ -25,14 +25,29 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Initialize Variables
-grav = 0.2;
-hsp = 0;
+            <string>hsp = 0;
+hsp_f = .0;
 vsp = 0;
-jumpspeed = 6;
-movespeed = 2;
+vsp_f = .0;
+grv = 0.2;
+frc = 0.4;
+acc = 0.5;
+jmp = -5
+hsp_max = 2.6;
+vsp_max = 5;
+jbuff = 0;
+image_speed = 0.05;
 
-image_speed = .05
+stepcount = 0;
+steppitch = 0.8;
+
+enum st
+{
+    normal,
+    attack
+}
+state = st.normal
+
 </string>
           </argument>
         </arguments>
@@ -55,54 +70,172 @@ image_speed = .05
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Get the player's input
-key_right = keyboard_check(ord("D")); //move right
-key_left = -keyboard_check(ord("A")); //move left
-key_jump = keyboard_check_pressed(vk_space); //jump
+            <string>///Main Logic
 
-//React to inputs
-move = key_left + key_right;
-hsp = move * movespeed;
-if (vsp &lt; 10) vsp += grav; //gravity
 
-if (place_meeting(x,y+1,obj_block))
+switch(state)
 {
-    vsp = key_jump * -jumpspeed
-}
-
-//Horizontal Collision
-if (place_meeting(x+hsp,y,obj_block))
-{
-    while(!place_meeting(x+sign(hsp),y,obj_block))
+    case st.normal:
     {
-    x += sign(hsp);
-    }
-    hsp = 0;
-}
+        //====Tick
+        if (jbuff &gt; 0) jbuff--;
+        vsp += grv;
+        
+        
+        //====Ground Check
+        if (place_meeting(x,y+1,par_wall)) 
+        {
+            if (jbuff == 0)
+            {
+                //Just Landed
+                audio_sound_pitch(snd_step,0.4);
+                audio_play_sound(snd_step,0,0);
+            }
+            jbuff = 4;
+        }
+        
+        //====Get Inputs
+        var move;
+        move = -(keyboard_check_direct(vk_left) || keyboard_check_direct(ord("A"))) + (keyboard_check_direct(vk_right) || keyboard_check_direct(ord("D")));
+        hsp += acc * move;
+        
+        if (jbuff &gt; 0) 
+        {
+            if (keyboard_check_pressed(vk_shift))
+            {
+                vsp = jmp;
+                jbuff = 0;
+                repeat(choose(2,3)) instance_create(x,bbox_bottom,obj_dust);
+                audio_sound_pitch(snd_step,1.2)
+                audio_play_sound(snd_step,0,0);
+            }
+            if (keyboard_check_pressed(vk_space)) &amp;&amp; (jbuff == 4)
+            {
+                state = st.attack;
+                image_index = 0;
+                sprite_index = spr_attack;
+                image_speed = 1/6;
+                break;
+            }
+        }
+        else
+        {
+            //Air inputs
+        }
+        
+        //====Friction
+        if (move == 0) hsp = Approach(hsp,0,frc);
 
-//Vertical Collision
-if (place_meeting(x,y+vsp,obj_block))
-{
-    while(!place_meeting(x,y+sign(vsp),obj_block))
+        
+        Player_MoveCollide();
+        
+        //====Animate
+        if (sign(hsp_final) != 0) image_xscale = sign(hsp_final);
+        if (abs(hsp_final) &gt; 0) 
+        {
+            sprite_index = spr_player_walk; 
+            stepcount++;
+        }
+        else 
+        {
+            sprite_index = spr_player_stand;
+            stepcount = 0;
+        }
+        if (jbuff == 0)
+        {
+            if (vsp_final &lt; 0) sprite_index = spr_player_jump; else sprite_index = spr_player_walk;
+            stepcount = 0;
+        }
+        
+        
+        //====Footstep
+        if (stepcount &gt; 12)
+        {
+            stepcount = 0;
+            if (steppitch == 0.8) steppitch = 0.6 else steppitch = 0.8;
+            audio_sound_pitch(snd_step,steppitch)
+            audio_play_sound(snd_step,0,0);
+        }
+        break;
+    }
+    
+    case st.attack:
     {
-    y += sign(vsp);
+    
+        //====Friction
+        hsp = Approach(hsp,0,frc);
+        vsp = Approach(vsp,0,frc);
+        
+        //====Animate
+        sprite_index = spr_attack;
+        
+        //====Hitbox
+        if (image_index &gt;= 1) &amp;&amp; (image_index &lt;= 3)
+        {
+            with (instance_create(x,y,obj_hitbox))
+            {
+                image_xscale = other.image_xscale;
+                with (instance_place(x,y,par_enemy))
+                {
+                    if (hit == 0)
+                    {
+                        hit = 1;
+                        vsp = -3;
+                        hsp = sign(x - other.x) * 4;
+                        image_xscale = sign(hsp);
+                    }
+                }
+            }
+        }
+        Player_MoveCollide();
     }
-    vsp = 0;
 }
-
-x += hsp;
-y += vsp;
-
-//Animations
-if (move!=0) image_xscale = move;
-if (place_meeting(x,y+1,obj_block))
-{
-    if (move!=0) sprite_index = spr_player_walk; else sprite_index = spr_player_stand;
-}
-else
-{
-    if (vsp &lt; 0) sprite_index = spr_player_jump;
-}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="7">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (sprite_index == spr_attack) state = st.normal;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="82">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>game_restart()
 </string>
           </argument>
         </arguments>

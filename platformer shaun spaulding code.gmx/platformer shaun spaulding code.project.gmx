@@ -4,22 +4,35 @@
     <Config>Configs\Default</Config>
   </Configs>
   <NewExtensions/>
-  <sounds name="sound"/>
+  <sounds name="sound">
+    <sound>sound\snd_step</sound>
+  </sounds>
   <sprites name="sprites">
-    <sprite>sprites\spr_block</sprite>
+    <sprite>sprites\spr_wall</sprite>
     <sprite>sprites\spr_player_walk</sprite>
     <sprite>sprites\spr_player_stand</sprite>
     <sprite>sprites\spr_attack</sprite>
     <sprite>sprites\spr_hitbox</sprite>
     <sprite>sprites\spr_solid_player</sprite>
     <sprite>sprites\spr_player_jump</sprite>
+    <sprite>sprites\spr_skele</sprite>
+    <sprite>sprites\spr_dust</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
+  <scripts name="scripts">
+    <script>scripts\Player_MoveCollide.gml</script>
+    <script>scripts\Approach.gml</script>
+    <script>scripts\Chance.gml</script>
+  </scripts>
   <objects name="objects">
     <object>objects\obj_player</object>
-    <object>objects\obj_block</object>
     <object>objects\obj_hitbox</object>
+    <object>objects\par_wall</object>
+    <object>objects\obj_wall</object>
+    <object>objects\obj_skeleton</object>
+    <object>objects\obj_dust</object>
+    <object>objects\par_enemy</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
