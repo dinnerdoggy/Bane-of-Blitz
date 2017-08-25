@@ -133,7 +133,8 @@ switch(state)
         if (sign(hsp_final) != 0) image_xscale = sign(hsp_final);
         if (abs(hsp_final) &gt; 0) 
         {
-            sprite_index = spr_player_walk; 
+            sprite_index = spr_player_walk;
+            image_speed = .05;
             stepcount++;
         }
         else 
@@ -213,6 +214,7 @@ switch(state)
           <argument>
             <kind>1</kind>
             <string>if (sprite_index == spr_attack) state = st.normal;
+if (state = st.normal) image_speed = .05
 </string>
           </argument>
         </arguments>
