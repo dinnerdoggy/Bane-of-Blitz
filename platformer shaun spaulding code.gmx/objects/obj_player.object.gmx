@@ -152,10 +152,7 @@ switch(state)
         //====Footstep
         if (stepcount &gt; 12)
         {
-            stepcount = 0;
-            if (steppitch == 0.8) steppitch = 0.6 else steppitch = 0.8;
-            audio_sound_pitch(snd_step,steppitch)
-            audio_play_sound(snd_step,0,0);
+            if image_index = 1 or image_index=4 audio_play_sound(snd_step,10,false);
         }
         break;
     }
